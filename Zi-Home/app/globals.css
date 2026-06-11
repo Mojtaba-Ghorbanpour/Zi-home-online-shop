@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@plugin './libs/HeroUI/heroUi.ts';
+@theme {
+  /* primary */
+  --color-primary-50: #fdf2f6;
+  --color-primary-100: #fce7ef;
+  --color-primary-200: #fbcfe0;
+  --color-primary-300: #faa7c5;
+  --color-primary-400: #f5719e;
+  --color-primary-500: #ef5a88;
+  --color-primary-600: #dc2655;
+  --color-primary-700: #bf173e;
+  --color-primary-800: #9e1634;
+  --color-primary-900: #84172f;
+  --color-primary-950: #510616;
+  /* natural */
+  --color-natural-50: #f0f1f1;
+  --color-natural-100: #e1e2e3;
+  --color-natural-200: #d1d4d4;
+  --color-natural-300: #c2c5c6;
+  --color-natural-400: #a4a9aa;
+  --color-natural-500: #858c8d;
+  --color-natural-600: #676f71;
+  --color-natural-700: #52595a;
+  --color-natural-800: #3e4344;
+  --color-natural-900: #292c2d;
+  --color-natural-950: #151617;
+}
+.lucide-log-out {
+  transform: rotate(180deg);
+}
+body {
+  overflow-x: hidden;
+}
