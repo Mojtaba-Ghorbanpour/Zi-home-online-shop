@@ -9,7 +9,7 @@ This project now includes comprehensive API documentation using Swagger/OpenAPI 
 Once your server is running, you can access the interactive API documentation at:
 
 ```
-http://localhost:3000/api-docs
+http://localhost:8000/api-docs
 ```
 
 Replace `localhost:3000` with your actual host and port if different.
@@ -25,12 +25,14 @@ Replace `localhost:3000` with your actual host and port if different.
 ## 🚀 API Endpoints Overview
 
 ### Authentication
+
 - `POST /api/auth/login` - User login
-- `POST /api/auth/signup` - User registration  
+- `POST /api/auth/signup` - User registration
 - `GET /api/auth/logout` - User logout (requires auth)
 - `POST /api/auth/token` - Refresh access token
 
 ### Users (Admin only)
+
 - `GET /api/users` - Get all users
 - `POST /api/users` - Create new user
 - `GET /api/users/:id` - Get user by ID
@@ -38,6 +40,7 @@ Replace `localhost:3000` with your actual host and port if different.
 - `DELETE /api/users/:id` - Delete user
 
 ### Products
+
 - `GET /api/products` - Get all products (with pagination & filters)
 - `POST /api/products` - Create product (Admin only, supports file upload)
 - `GET /api/products/:id` - Get product by ID
@@ -45,6 +48,7 @@ Replace `localhost:3000` with your actual host and port if different.
 - `DELETE /api/products/:id` - Delete product (Admin only)
 
 ### Categories
+
 - `GET /api/categories` - Get all categories
 - `POST /api/categories` - Create category (supports icon upload)
 - `GET /api/categories/:id` - Get category by ID
@@ -52,6 +56,7 @@ Replace `localhost:3000` with your actual host and port if different.
 - `DELETE /api/categories/:id` - Delete category
 
 ### Subcategories
+
 - `GET /api/subcategories` - Get all subcategories (with category filter)
 - `POST /api/subcategories` - Create subcategory
 - `GET /api/subcategories/:id` - Get subcategory by ID
@@ -59,6 +64,7 @@ Replace `localhost:3000` with your actual host and port if different.
 - `DELETE /api/subcategories/:id` - Delete subcategory
 
 ### Orders
+
 - `GET /api/orders` - Get all orders (with pagination & filters)
 - `POST /api/orders` - Create new order
 - `GET /api/orders/:id` - Get order by ID
@@ -74,20 +80,23 @@ The API uses JWT (JSON Web Tokens) for authentication. To access protected endpo
 3. **Or manually add** `Authorization: Bearer <your-token>` header to requests
 
 ### Token Types
+
 - **Access Token**: Short-lived, used for API requests
 - **Refresh Token**: Long-lived, used to generate new access tokens
 
 ## 📝 Data Models
 
 ### User
+
 - `firstname`, `lastname`: User's name
-- `username`: Unique identifier for login  
+- `username`: Unique identifier for login
 - `password`: Min 8 chars, must contain letters & numbers
 - `phoneNumber`: Unique phone number
 - `address`: User's address
 - `role`: Either 'USER' or 'ADMIN'
 
-### Product  
+### Product
+
 - `name`: Unique product name
 - `price`: Product price (number)
 - `quantity`: Available quantity
@@ -98,11 +107,13 @@ The API uses JWT (JSON Web Tokens) for authentication. To access protected endpo
 - `rating`: Object with rate and count
 
 ### Category
+
 - `name`: Unique category name
 - `slugname`: Auto-generated URL-friendly name
 - `icon`: Category icon image (file upload)
 
 ### Order
+
 - `user`: Reference to User
 - `products`: Array of {product, count} objects
 - `totalPrice`: Auto-calculated total
@@ -121,12 +132,14 @@ Use `multipart/form-data` content type for these endpoints.
 ## 🔍 Query Parameters
 
 ### Pagination (Products, Users, Orders)
+
 - `page`: Page number (default: 1)
 - `limit`: Items per page (default: 10, max: 100)
 
 ### Filters
+
 - **Products**: `category`, `search`
-- **Users**: `role` 
+- **Users**: `role`
 - **Orders**: `user`, `deliveryStatus`
 - **Subcategories**: `category`
 
@@ -135,6 +148,7 @@ Use `multipart/form-data` content type for these endpoints.
 All API responses follow a consistent format:
 
 ### Success Response
+
 ```json
 {
   "status": "success",
@@ -142,10 +156,11 @@ All API responses follow a consistent format:
 }
 ```
 
-### Error Response  
+### Error Response
+
 ```json
 {
-  "status": "error", 
+  "status": "error",
   "message": "Error description",
   "error": { ... }
 }
@@ -155,7 +170,7 @@ All API responses follow a consistent format:
 
 - `400`: Bad Request - Invalid input data
 - `401`: Unauthorized - Authentication required
-- `403`: Forbidden - Insufficient permissions  
+- `403`: Forbidden - Insufficient permissions
 - `404`: Not Found - Resource doesn't exist
 - `409`: Conflict - Duplicate data (username, email, etc.)
 - `500`: Internal Server Error
@@ -163,6 +178,7 @@ All API responses follow a consistent format:
 ## 🧪 Testing the API
 
 ### Using Swagger UI
+
 1. Open `http://localhost:3000/api-docs`
 2. Click on any endpoint to expand
 3. Click "Try it out"
@@ -170,12 +186,14 @@ All API responses follow a consistent format:
 5. Click "Execute" to test
 
 ### Authentication in Swagger
+
 1. Click the "Authorize" button (🔒 icon)
 2. Enter `Bearer <your-jwt-token>`
 3. Click "Authorize"
 4. Now all requests will include the auth header
 
 ### Using cURL
+
 ```bash
 # Login
 curl -X POST http://localhost:3000/api/auth/login \
@@ -194,7 +212,7 @@ swagger/
 ├── swagger.js              # Main Swagger configuration
 └── paths/
     ├── auth.js             # Authentication endpoints
-    ├── users.js            # User management endpoints  
+    ├── users.js            # User management endpoints
     ├── products.js         # Product endpoints
     ├── categories.js       # Category endpoints
     ├── subcategories.js    # Subcategory endpoints
@@ -206,7 +224,7 @@ swagger/
 To modify the API documentation:
 
 1. **Update schemas** in `swagger/swagger.js`
-2. **Modify endpoint docs** in `swagger/paths/*.js`  
+2. **Modify endpoint docs** in `swagger/paths/*.js`
 3. **Server info** can be updated in the main config
 4. **UI customization** is in `app.js` Swagger setup
 

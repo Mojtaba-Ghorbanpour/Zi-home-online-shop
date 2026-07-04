@@ -15,7 +15,7 @@ const LogoutModal = () => {
     localStorage.clear();
     addToast({
       title: `خدانگهدار`,
-      color: "warning",
+      color: "danger",
       timeout: 3000,
       shouldShowTimeoutProgress: true,
     });
