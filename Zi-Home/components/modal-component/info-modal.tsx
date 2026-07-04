@@ -26,7 +26,11 @@ const InfoModal: React.FC<IInfo> = ({
 }) => {
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
-    mutationFn: (body: IUpdateOrder) => updateOrder(id as string, body),
+    mutationFn: (body: IUpdateOrder) =>
+      updateOrder(id as string, {
+        ...body,
+        deliveryDate: body.deliveryDate?.toISOString(),
+      }),
     onSuccess: () => {
       addToast({
         title: `سفارش با موفقیت تحویل داده شد`,
@@ -51,6 +55,12 @@ const InfoModal: React.FC<IInfo> = ({
       deliveryDate: new Date(),
     });
   };
+
+  const orderProducts: IUserOrderProduct[] = products.map((item) => ({
+    _id: item.product,
+    product: item.product,
+    count: item.count,
+  }));
   return (
     <>
       <Modal
@@ -69,7 +79,9 @@ const InfoModal: React.FC<IInfo> = ({
           </ModalHeader>
           <ModalBody className="space-y-2">
             <div className="flex gap-2 font-semibold">
-              <p>نام مشتری : {<GetUserName userId={user} />}</p>
+              <p>
+                نام مشتری : {user ? <GetUserName userId={user} /> : "نامشخص"}
+              </p>
             </div>
             <Divider orientation="horizontal" />
             <div className="flex gap-2 font-semibold">
@@ -77,7 +89,12 @@ const InfoModal: React.FC<IInfo> = ({
             </div>
             <Divider orientation="horizontal" />
             <div className="flex gap-2 font-semibold">
-              <p>زمان تحویل : {deliveryDate}</p>
+              <p>
+                زمان تحویل :{" "}
+                {deliveryDate
+                  ? new Date(deliveryDate).toLocaleDateString("fa-IR")
+                  : "تحویل داده نشده"}
+              </p>
             </div>
             <Divider orientation="horizontal" />
             <div className="flex gap-2 font-medium">
@@ -91,7 +108,7 @@ const InfoModal: React.FC<IInfo> = ({
             <Divider orientation="horizontal" />
             <div className="space-y-4 font-semibold">
               <p>محصولات خریداری شده :</p>
-              <OrderProductsTable products={products} />
+              <OrderProductsTable products={orderProducts} />
             </div>
             <Divider orientation="horizontal" />
 

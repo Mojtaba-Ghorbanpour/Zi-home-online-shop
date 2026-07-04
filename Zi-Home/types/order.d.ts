@@ -1,7 +1,7 @@
 interface IOrder {
   _id?: string;
   id?: string;
-  user: string;
+  user?: string;
   products: Array<{ product: string; count: number }>;
   deliveryDate: Date;
   price?: number;

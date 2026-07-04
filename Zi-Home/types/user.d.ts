@@ -30,7 +30,7 @@ interface ISignupBody {
   lastname: string;
   username: string;
   password: string;
-  phoneNumber: number;
+  phoneNumber: string;
   address: string;
 }
 interface IUserOrder {

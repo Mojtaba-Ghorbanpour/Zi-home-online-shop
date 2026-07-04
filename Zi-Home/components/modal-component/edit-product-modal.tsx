@@ -30,7 +30,6 @@ const EditProductModal: React.FC<IEditProductModalProps> = ({
   subcategory,
   brand,
   price,
-  thumbnail,
   quantity,
   id,
   description,

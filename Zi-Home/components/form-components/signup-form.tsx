@@ -33,7 +33,7 @@ const SignupForm = () => {
     console.log(data);
 
     try {
-      const response = await signupAccount(data as any);
+      const response = await signupAccount(data);
       const username = data.username;
       if (response.status === 201) {
         addToast({
@@ -50,7 +50,7 @@ const SignupForm = () => {
           router.push("/");
         }, 3000);
       }
-    } catch (error) {
+    } catch {
       addToast({
         title: `نام کاربری یا رمز عبور اشتباه است`,
         color: "danger",

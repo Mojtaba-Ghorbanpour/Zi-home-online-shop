@@ -48,7 +48,7 @@ const LoginForm = () => {
           router.push("/");
         }, 3000);
       }
-    } catch (error) {
+    } catch {
       addToast({
         title: `نام کاربری یا رمز عبور اشتباه است`,
         color: "danger",

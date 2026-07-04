@@ -8,8 +8,8 @@ const RenderInventoryTableCell = ({
 }: {
   product: IProduct;
   columnKey: string;
-  editableCells: any;
-  setEditableCells: any;
+  editableCells;
+  setEditableCells;
 }) => {
   const [isEditing, setIsEditing] = React.useState(false);
 
@@ -23,9 +23,9 @@ const RenderInventoryTableCell = ({
     }
   };
 
-  const handleChange = (event: any) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
-    setEditableCells((prev: any) => ({
+    setEditableCells((prev) => ({
       ...prev,
       [product.id as string]: {
         ...prev[product.id as string],

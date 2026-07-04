@@ -3,7 +3,6 @@
 import { generateHttpClient } from "./client";
 import { urls } from "./urls";
 
-// نوع سفارش
 export interface IOrder {
   _id: string;
   user: string;
@@ -14,10 +13,9 @@ export interface IOrder {
   totalPrice?: number;
   createdAt?: string;
   updatedAt?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-// تست اتصال به API
 export async function testConnection(): Promise<boolean> {
   try {
     const res = await generateHttpClient().get(urls.orders + "?page=1&limit=1");
@@ -28,18 +26,18 @@ export async function testConnection(): Promise<boolean> {
   }
 }
 
-// گرفتن یک سفارش با شناسه
-export async function getOrderByIdSafe(id: string): Promise<{ order: IOrder; success: boolean }> {
+export async function getOrderByIdSafe(
+  id: string,
+): Promise<{ order: IOrder; success: boolean }> {
   const url = `${urls.orders}/${id}`;
   const res = await generateHttpClient().get(url);
   return { order: res.data?.order || res.data?.data, success: true };
 }
 
-// گرفتن لیست سفارش‌ها با فیلتر و صفحه‌بندی
 export async function allOrders(
   page: number = 1,
   limit: number = 10,
-  deliveryStatus: "true" | "false" | "all" = "all"
+  deliveryStatus: "true" | "false" | "all" = "all",
 ) {
   const query = new URLSearchParams();
   query.append("page", page.toString());
@@ -53,7 +51,6 @@ export async function allOrders(
   return res;
 }
 
-// به‌روزرسانی سفارش
 export async function updateOrder(orderId: string, payload: Partial<IOrder>) {
   const url = `${urls.orders}/${orderId}`;
   const res = await generateHttpClient().patch(url, payload);

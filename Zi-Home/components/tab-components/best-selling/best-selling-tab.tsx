@@ -15,7 +15,7 @@ const BestSellingTab = () => {
     (c: ICategory) => ({
       id: c._id,
       name: c.name,
-    })
+    }),
   );
   if (isLoading) return <p>در حال بارگذاری...</p>;
   if (isError) return <p>خطا در دریافت کالاها</p>;
@@ -38,8 +38,8 @@ const BestSellingTab = () => {
           color="danger"
           className="font-semibold text-natural-900"
         >
-          {(category: ICategory) => (
-            <Tab key={category._id} title={category.name}>
+          {(category: { id: string; name: string }) => (
+            <Tab key={category.id} title={category.name}>
               <CategoryContent categoryId={category.id} />
             </Tab>
           )}

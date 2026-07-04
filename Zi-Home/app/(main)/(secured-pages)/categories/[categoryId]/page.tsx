@@ -1,16 +1,17 @@
 import { getCategoriesProduct } from "@/app/apis/product.api";
 import CategoryProductList from "@/components/list-components/category-product-list";
 
-export const dynamic = "force-dynamic"; // 👈 جلوگیری از خطاهای cache و build
+export const dynamic = "force-dynamic";
 
-export default async function CategoryPage({
-  params,
-}: {
-  params: { categoryId: string };
-}) {
-  const categoryId = params.categoryId;
+type CategoryPageProps = {
+  params: Promise<{
+    categoryId: string;
+  }>;
+};
 
-  // گرفتن محصولات دسته‌بندی
+export default async function CategoryPage({ params }: CategoryPageProps) {
+  const { categoryId } = await params;
+
   const response = await getCategoriesProduct(categoryId, 1, 20);
   const products = response.data?.products ?? [];
 

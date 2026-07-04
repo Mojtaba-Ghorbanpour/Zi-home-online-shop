@@ -33,8 +33,9 @@ const DeleteCartItem: React.FC<IDeleteCartItemProps> = ({
         <ModalContent>
           <ModalHeader>حذف محصول</ModalHeader>
           <ModalBody>
-            آیا مطمئن هستید می‌خواهید محصول "{itemName}" را حذف کنید؟
+            آیا مطمئن هستید می‌خواهید محصول «{itemName}» را حذف کنید؟
           </ModalBody>
+
           <ModalFooter className="flex justify-end gap-3">
             <Button
               variant="light"

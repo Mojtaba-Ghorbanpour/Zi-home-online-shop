@@ -26,14 +26,29 @@ type ProductFormData = z.infer<typeof AddProductSchema>;
 
 const AddProductModal = ({ onClose }: { onClose: () => void }) => {
   const queryClient = useQueryClient();
-
-  const { data, isLoading: isLoadingCategory, isError: isErrorCategory } = useQuery({
+  interface ApiError {
+    response?: {
+      data?: {
+        message?: string;
+      };
+    };
+    message?: string;
+  }
+  const {
+    data,
+    isLoading: isLoadingCategory,
+    isError: isErrorCategory,
+  } = useQuery({
     queryKey: ["categories"],
     queryFn: allCategories,
   });
   const categories = data?.data?.data?.categories || [];
 
-  const { data: subCat, isLoading: isLoadingSubcategory, isError: isErrorSubcategory } = useQuery({
+  const {
+    data: subCat,
+    isLoading: isLoadingSubcategory,
+    isError: isErrorSubcategory,
+  } = useQuery({
     queryKey: ["subcategories"],
     queryFn: () => allSubcategories(1, 20),
   });
@@ -54,18 +69,18 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
   const { mutate, isPending } = useMutation({
     mutationFn: (formData: FormData) => addProducts(formData),
     onSuccess: () => {
-      // بسته شدن مودال و invalidate بعد از موفقیت
       queryClient.invalidateQueries({ queryKey: ["AddProducts"] });
       addToast({ title: "محصول با موفقیت اضافه شد", color: "success" });
       onClose();
     },
-    onError: async (error: any) => {
+    onError: async (error) => {
+      const err = error as ApiError;
+
       const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        "خطا در افزودن محصول";
+        err.response?.data?.message || err.message || "خطا در افزودن محصول";
+
       addToast({ title: message, color: "danger" });
-      console.error("Add product failed:", error?.response?.data || error);
+      console.error("Add product failed:", err.response?.data || err);
     },
   });
 
@@ -76,24 +91,23 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
     formData.append("brand", data.brand);
     formData.append("price", String(data.price));
     formData.append("quantity", String(data.quantity));
-    formData.append("category", data.category);       // باید ObjectId معتبر باشد
-    formData.append("subcategory", data.subcategory); // باید ObjectId معتبر باشد
+    formData.append("category", data.category);
+    formData.append("subcategory", data.subcategory);
     formData.append("description", data.description);
 
-    // ⬇️ مهم: گرفتن File واقعی از Controller
-    const fileList = (data as any).thumbnail as FileList | undefined;
+    const fileList = data.thumbnail as unknown as FileList | undefined;
     const file = fileList?.[0];
     if (file) {
       formData.append("thumbnail", file, file.name);
-      // اگر فعلاً نمی‌خوای گالری بفرستی، این خط را نذار
-      // formData.append("images", file, file.name);
     }
 
     mutate(formData);
   };
 
-  if (isLoadingCategory || isLoadingSubcategory) return <p>در حال بارگذاری...</p>;
-  if (isErrorCategory || isErrorSubcategory) return <p>خطا در دریافت داده‌ها</p>;
+  if (isLoadingCategory || isLoadingSubcategory)
+    return <p>در حال بارگذاری...</p>;
+  if (isErrorCategory || isErrorSubcategory)
+    return <p>خطا در دریافت داده‌ها</p>;
 
   return (
     <Modal backdrop="opaque" isOpen={true} onOpenChange={onClose} size="md">
@@ -109,7 +123,6 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
               onSubmit={handleSubmit(onSubmit)}
               encType="multipart/form-data"
             >
-              {/* ⬇️ فایل با Controller تا FileList درست وارد فرم شود */}
               <div>
                 <Controller
                   name="thumbnail"
@@ -120,19 +133,19 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                       accept=".png, .jpg, .jpeg"
                       type="file"
                       onChange={(e) => {
-                        const files = (e.target as HTMLInputElement).files || undefined;
-                        // RHF انتظار دارد value همان FileList باشد
+                        const files =
+                          (e.target as HTMLInputElement).files || undefined;
                         field.onChange(files);
                         setDisable(false);
                       }}
-                      // Input کتابخانه‌ها معمولاً value کنترل‌شده برای فایل نمی‌گیرند:
-                      // پس عمداً value/checked ست نکن.
                       size="md"
                     />
                   )}
                 />
-                <p className={`text-red-500 text-sm font-medium ${errors.thumbnail ? "visible" : "invisible"}`}>
-                  {(errors.thumbnail as any)?.message || "خطا"}
+                <p
+                  className={`text-red-500 text-sm font-medium ${errors.thumbnail ? "visible" : "invisible"}`}
+                >
+                  {(errors.thumbnail?.message as string) || "خطا"}
                 </p>
               </div>
 
@@ -144,7 +157,9 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                     {...register("name", { onChange: () => setDisable(false) })}
                     size="md"
                   />
-                  <p className={`text-red-500 text-sm font-medium ${errors.name ? "visible" : "invisible"}`}>
+                  <p
+                    className={`text-red-500 text-sm font-medium ${errors.name ? "visible" : "invisible"}`}
+                  >
                     {errors.name?.message || "خطا"}
                   </p>
                 </div>
@@ -152,10 +167,14 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                   <Input
                     label="برند"
                     type="text"
-                    {...register("brand", { onChange: () => setDisable(false) })}
+                    {...register("brand", {
+                      onChange: () => setDisable(false),
+                    })}
                     size="md"
                   />
-                  <p className={`text-red-500 text-sm font-medium ${errors.brand ? "visible" : "invisible"}`}>
+                  <p
+                    className={`text-red-500 text-sm font-medium ${errors.brand ? "visible" : "invisible"}`}
+                  >
                     {errors.brand?.message || "خطا"}
                   </p>
                 </div>
@@ -166,10 +185,14 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                   <Input
                     label="قیمت"
                     type="number"
-                    {...register("price", { onChange: () => setDisable(false) })}
+                    {...register("price", {
+                      onChange: () => setDisable(false),
+                    })}
                     size="md"
                   />
-                  <p className={`text-red-500 text-sm font-medium ${errors.price ? "visible" : "invisible"}`}>
+                  <p
+                    className={`text-red-500 text-sm font-medium ${errors.price ? "visible" : "invisible"}`}
+                  >
                     {errors.price?.message || "خطا"}
                   </p>
                 </div>
@@ -177,10 +200,14 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                   <Input
                     label="تعداد"
                     type="number"
-                    {...register("quantity", { onChange: () => setDisable(false) })}
+                    {...register("quantity", {
+                      onChange: () => setDisable(false),
+                    })}
                     size="md"
                   />
-                  <p className={`text-red-500 text-sm font-medium ${errors.quantity ? "visible" : "invisible"}`}>
+                  <p
+                    className={`text-red-500 text-sm font-medium ${errors.quantity ? "visible" : "invisible"}`}
+                  >
                     {errors.quantity?.message || "خطا"}
                   </p>
                 </div>
@@ -196,7 +223,9 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                         size="lg"
                         items={categories}
                         placeholder="دسته‌بندی‌ها"
-                        selectedKeys={field.value ? new Set([field.value]) : new Set()}
+                        selectedKeys={
+                          field.value ? new Set([field.value]) : new Set()
+                        }
                         onSelectionChange={(keys) => {
                           const val = Array.from(keys)[0] as string | undefined;
                           field.onChange(val);
@@ -205,12 +234,16 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                         fullWidth
                       >
                         {(category: ICategory) => (
-                          <SelectItem key={category._id}>{category.name}</SelectItem>
+                          <SelectItem key={category._id}>
+                            {category.name}
+                          </SelectItem>
                         )}
                       </Select>
                     )}
                   />
-                  <p className={`text-red-500 text-sm font-medium ${errors.category ? "visible" : "invisible"}`}>
+                  <p
+                    className={`text-red-500 text-sm font-medium ${errors.category ? "visible" : "invisible"}`}
+                  >
                     {errors.category?.message || "خطا"}
                   </p>
                 </div>
@@ -224,7 +257,9 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                         size="lg"
                         items={subcategories}
                         placeholder="زیر دسته‌بندی‌ها"
-                        selectedKeys={field.value ? new Set([field.value]) : new Set()}
+                        selectedKeys={
+                          field.value ? new Set([field.value]) : new Set()
+                        }
                         onSelectionChange={(keys) => {
                           const val = Array.from(keys)[0] as string | undefined;
                           field.onChange(val);
@@ -233,12 +268,16 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                         fullWidth
                       >
                         {(subcategory: ISubcategory) => (
-                          <SelectItem key={subcategory._id}>{subcategory.name}</SelectItem>
+                          <SelectItem key={subcategory._id}>
+                            {subcategory.name}
+                          </SelectItem>
                         )}
                       </Select>
                     )}
                   />
-                  <p className={`text-red-500 text-sm font-semibold ${errors.subcategory ? "visible" : "invisible"}`}>
+                  <p
+                    className={`text-red-500 text-sm font-semibold ${errors.subcategory ? "visible" : "invisible"}`}
+                  >
                     {errors.subcategory?.message || "خطا"}
                   </p>
                 </div>
@@ -248,18 +287,32 @@ const AddProductModal = ({ onClose }: { onClose: () => void }) => {
                 <Textarea
                   fullWidth
                   label="توضیحات محصول"
-                  {...register("description", { onChange: () => setDisable(false) })}
+                  {...register("description", {
+                    onChange: () => setDisable(false),
+                  })}
                 />
-                <p className={`text-red-500 text-sm font-semibold ${errors.description ? "visible" : "invisible"}`}>
+                <p
+                  className={`text-red-500 text-sm font-semibold ${errors.description ? "visible" : "invisible"}`}
+                >
                   {errors.description?.message || "خطا"}
                 </p>
               </div>
 
               <div className="w-full flex items-center justify-center gap-4 mt-4">
-                <Button color="default" variant="light" onClick={onClose} className="font-semibold">
+                <Button
+                  color="default"
+                  variant="light"
+                  onClick={onClose}
+                  className="font-semibold"
+                >
                   لغو
                 </Button>
-                <Button isDisabled={disable || isPending} color="danger" type="submit" className="font-semibold">
+                <Button
+                  isDisabled={disable || isPending}
+                  color="danger"
+                  type="submit"
+                  className="font-semibold"
+                >
                   {isPending ? "در حال ارسال..." : "ثبت"}
                 </Button>
               </div>

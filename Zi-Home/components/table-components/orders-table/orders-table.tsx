@@ -18,9 +18,16 @@ import RenderOrderTableCell from "./render-orders-table-cell";
 import { allOrders, type IOrder } from "@/app/apis/order.api";
 import TablePagination from "../table-pagination/table-pagination";
 
-// تعریف نوع فیلتر
 type TStatusFilter = "all" | "true" | "false";
-
+type TOrderRow = {
+  id: string;
+  name: string;
+  price: number;
+  createdAt: string;
+  deliveryDate: Date;
+  products: IOrder["products"];
+  deliveryStatus: boolean;
+};
 export const columns = [
   { name: "شناسه سفارش", uid: "id" },
   { name: "نام کاربر", uid: "name" },
@@ -39,16 +46,19 @@ const OrdersTable = () => {
     queryFn: () => allOrders(page, 5, statusFilter),
   });
 
-  const orders = (data?.data?.data?.orders || []).map((order: IOrder) => ({
-  id: order._id,
-  name: order.user,
-  price: order.totalPrice,
-  createdAt: new Date(order.createdAt || "").toLocaleDateString("fa-IR"),
-  deliveryDate: new Date(order.deliveryDate || "").toLocaleDateString("fa-IR"),
-  products: order.products,
-  deliveryStatus: order.deliveryStatus,
-}));
-
+  const orders: TOrderRow[] = (data?.data?.data?.orders || []).map(
+    (order: IOrder) => ({
+      id: order._id,
+      name: order.user,
+      price: order.totalPrice,
+      createdAt: new Date(order.createdAt || "").toLocaleDateString("fa-IR"),
+      deliveryDate: new Date(order.deliveryDate || "").toLocaleDateString(
+        "fa-IR",
+      ),
+      products: order.products,
+      deliveryStatus: order.deliveryStatus,
+    }),
+  );
 
   const totalPages = data?.data?.total_pages || 0;
   console.log("✅ response data", data);
@@ -57,7 +67,6 @@ const OrdersTable = () => {
 
   return (
     <div className="flex flex-col gap-4 py-5">
-      {/* فیلتر وضعیت */}
       <div className="flex gap-3 items-end">
         <RadioGroup
           orientation="horizontal"
@@ -74,7 +83,6 @@ const OrdersTable = () => {
         </RadioGroup>
       </div>
 
-      {/* جدول سفارشات */}
       <Table selectionMode="single">
         <TableHeader columns={columns}>
           {(column) => (
@@ -91,7 +99,7 @@ const OrdersTable = () => {
           )}
         </TableHeader>
         <TableBody emptyContent={"سفارشی یافت نشد!"} items={orders}>
-          {(item: any) => (
+          {(item: TOrderRow) => (
             <TableRow key={item.id}>
               {(columnKey) => (
                 <TableCell className="font-semibold text-natural-800">
@@ -106,9 +114,12 @@ const OrdersTable = () => {
         </TableBody>
       </Table>
 
-      {/* صفحه‌بندی */}
       <div>
-        <TablePagination page={page} totalPages={totalPages} onChange={setPage} />
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          onChange={setPage}
+        />
       </div>
     </div>
   );
